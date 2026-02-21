@@ -175,7 +175,7 @@ function AdminDashboard() {
               </Link>
               <h1 className="text-xl font-bold text-gray-900">Админ-панель</h1>
             </div>
-            <Button variant="outline" onClick={logout} className="flex items-center gap-2">
+            <Button variant="outline" onClick={logout} className="flex items-center gap-2 text-gray-700 hover:text-gray-900 border-gray-200">
               <LogOut className="w-4 h-4" />
               Выйти
             </Button>
@@ -286,7 +286,7 @@ function AdminDashboard() {
                         <SelectItem value="rejected">Отказ</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Button variant="outline" onClick={exportCSV} className="flex items-center">
+                    <Button variant="outline" onClick={exportCSV} className="flex items-center text-gray-700 hover:text-gray-900 border-gray-200">
                       <Download className="w-4 h-4 mr-2" />
                       Экспорт
                     </Button>
@@ -345,7 +345,7 @@ function AdminDashboard() {
                             </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
-                                <Button variant="ghost" size="sm" onClick={() => setSelectedRequest(request)}>
+                                <Button variant="ghost" size="sm" onClick={() => setSelectedRequest(request)} className="text-gray-600 hover:text-gray-900">
                                   <Eye className="w-4 h-4" />
                                 </Button>
                                 <Select value={request.status} onValueChange={(value) => updateStatus(request.id, value)}>
