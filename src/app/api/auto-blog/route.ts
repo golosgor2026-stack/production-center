@@ -1,24 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import ZAI from 'z-ai-web-dev-sdk';
+import { 
+  ALL_KEYWORDS, 
+  HIGH_FREQUENCY_KEYWORDS, 
+  MEDIUM_FREQUENCY_KEYWORDS, 
+  LOW_FREQUENCY_KEYWORDS,
+  SEOKeyword 
+} from '@/lib/seo-keywords';
 
 const prisma = new PrismaClient();
-
-// Темы для SEO статей
-const TOPICS = [
-  { topic: "организация форумов", keywords: ["форум", "мероприятие", "организация", "конференция", "деловое событие"] },
-  { topic: "event-маркетинг", keywords: ["event маркетинг", "продвижение", "мероприятие", "участники", "аудитория"] },
-  { topic: "корпоративные мероприятия", keywords: ["корпоратив", "тимбилдинг", "сотрудники", "компания", "мероприятие"] },
-  { topic: "техническое оснащение мероприятий", keywords: ["звук", "свет", "оборудование", "сцена", "техническое оснащение"] },
-  { topic: "безопасность мероприятий", keywords: ["безопасность", "охрана", "мероприятие", "массовое событие", "контроль"] },
-  { topic: "B2B события", keywords: ["B2B", "деловое мероприятие", "нетворкинг", "бизнес", "конференция"] },
-  { topic: "фестивали и концерты", keywords: ["фестиваль", "концерт", "музыка", "open-air", "мероприятие"] },
-  { topic: "медиапродакшн", keywords: ["видео", "съемка", "контент", "медиа", "продакшн"] },
-  { topic: "подкастинг", keywords: ["подкаст", "аудио", "контент", "корпоративный", "запись"] },
-  { topic: "кейтеринг на мероприятиях", keywords: ["кейтеринг", "питание", "банкет", "фуршет", "мероприятие"] },
-  { topic: "волонтеры на мероприятиях", keywords: ["волонтеры", "волонтер", "мероприятие", "организация", "команда"] },
-  { topic: "спонсорство мероприятий", keywords: ["спонсор", "партнер", "мероприятие", "финансирование", "бюджет"] },
-];
 
 function generateSlug(title: string): string {
   const transliteration: Record<string, string> = {
@@ -40,9 +31,95 @@ function generateSlug(title: string): string {
     .substring(0, 80);
 }
 
+// Изображения для разных категорий
+const COVER_IMAGES: Record<string, string[]> = {
+  federal: [
+    'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
+    'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80',
+  ],
+  business: [
+    'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80',
+    'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80',
+  ],
+  corporate: [
+    'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&q=80',
+    'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80',
+  ],
+  concerts: [
+    'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&q=80',
+    'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80',
+  ],
+  festivals: [
+    'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800&q=80',
+    'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=800&q=80',
+  ],
+  technical: [
+    'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&q=80',
+    'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
+  ],
+  default: [
+    'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
+    'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80',
+    'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80',
+  ],
+};
+
+function getCoverImage(category: string): string {
+  const images = COVER_IMAGES[category] || COVER_IMAGES.default;
+  return images[Math.floor(Math.random() * images.length)];
+}
+
+// Стратегия выбора ключевых слов: чередуем частотность
+function selectKeywordsForArticle(): { primary: SEOKeyword; secondary: SEOKeyword[] } {
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
+  const frequencyType = dayOfYear % 3; // 0, 1, 2 - high, medium, low
+  
+  let primaryPool: SEOKeyword[];
+  switch (frequencyType) {
+    case 0: primaryPool = HIGH_FREQUENCY_KEYWORDS; break;
+    case 1: primaryPool = MEDIUM_FREQUENCY_KEYWORDS; break;
+    default: primaryPool = LOW_FREQUENCY_KEYWORDS;
+  }
+  
+  // Основное ключевое слово
+  const primary = primaryPool[Math.floor(Math.random() * primaryPool.length)];
+  
+  // Дополнительные ключевые слова (смешанные)
+  const secondary: SEOKeyword[] = [];
+  
+  // Добавляем 2-4 связанных ключевых слова
+  const relatedCount = 2 + Math.floor(Math.random() * 3);
+  const usedKeywords = new Set([primary.keyword]);
+  
+  // Пытаемся найти ключевые слова той же категории
+  const sameCategory = ALL_KEYWORDS.filter(k => k.category === primary.category && k.keyword !== primary.keyword);
+  const shuffledSame = sameCategory.sort(() => Math.random() - 0.5);
+  
+  for (const kw of shuffledSame) {
+    if (secondary.length >= relatedCount) break;
+    if (!usedKeywords.has(kw.keyword)) {
+      secondary.push(kw);
+      usedKeywords.add(kw.keyword);
+    }
+  }
+  
+  // Если не хватает, добираем из общего пула
+  const shuffled = ALL_KEYWORDS.sort(() => Math.random() - 0.5);
+  for (const kw of shuffled) {
+    if (secondary.length >= relatedCount) break;
+    if (!usedKeywords.has(kw.keyword)) {
+      secondary.push(kw);
+      usedKeywords.add(kw.keyword);
+    }
+  }
+  
+  return { primary, secondary };
+}
+
 async function generateArticle() {
-  // Выбираем случайную тему
-  const topicData = TOPICS[Math.floor(Math.random() * TOPICS.length)];
+  // Выбираем ключевые слова по стратегии
+  const { primary, secondary } = selectKeywordsForArticle();
+  const allKeywords = [primary, ...secondary];
   
   const zai = await ZAI.create();
   
@@ -51,34 +128,48 @@ async function generateArticle() {
     messages: [
       {
         role: 'system',
-        content: `Ты профессиональный SEO-копирайтер для event-агентства. Пиши на русском языке.
-        
-Создай статью на тему "${topicData.topic}" для продюсерского центра Евгения Усачева.
+        content: `Ты профессиональный SEO-копирайтер для продюсерского центра Евгения Усачева. Пиши на русском языке.
 
-Требования:
-1. Заголовок: цепляющий, содержит ключевые слова, 60-80 символов
-2. Вступление: 2-3 предложения с основной мыслью
+Продюсерский центр организует мероприятия федерального уровня: форумы с участием первых лиц государства, B2B-события, фестивали, концерты, корпоративы.
+
+ЗАДАЧА: Написать SEO-оптимизированную статью.
+
+ГЛАВНОЕ КЛЮЧЕВОЕ СЛОВО: "${primary.keyword}"
+ДОПОЛНИТЕЛЬНЫЕ КЛЮЧЕВЫЕ СЛОВА: ${secondary.map(k => k.keyword).join(', ')}
+
+ТРЕБОВАНИЯ К СТАТЬЕ:
+1. Заголовок: включает главное ключевое слово, цепляющий, 60-80 символов
+2. Вступление: 2-3 предложения, содержит главное ключевое слово
 3. Основной текст: 5-7 разделов с подзаголовками H2
 4. Каждый раздел: 2-3 абзаца по 2-4 предложения
-5. Заключение: 2-3 предложения с призывом к действию
-6. Ключевые слова: ${topicData.keywords.join(', ')}
+5. Ключевые слова использовать естественно в тексте
+6. Практические советы и полезная информация
+7. Призыв к действию в конце
 
-Формат ответа (строго JSON):
+ФОРМАТ ОТВЕТА (строго JSON):
 {
-  "title": "Заголовок статьи",
-  "excerpt": "Краткое описание 150-200 символов",
+  "title": "Заголовок статьи с ключевым словом",
+  "excerpt": "Краткое описание 150-200 символов с ключевым словом",
   "content": "<p>Вступление...</p><h2>Раздел 1</h2><p>Текст...</p>...",
   "keywords": ["ключевое слово 1", "ключевое слово 2"],
-  "readTime": "X мин"
+  "readTime": "X мин",
+  "category": "название категории"
 }`
       },
       {
         role: 'user',
-        content: `Напиши уникальную SEO-оптимизированную статью на тему "${topicData.topic}" для блога продюсерского центра. Дата: ${new Date().toLocaleDateString('ru-RU')}. Сделай статью практичной и полезной.`
+        content: `Напиши уникальную SEO-оптимизированную статью для блога продюсерского центра.
+
+Главное ключевое слово: "${primary.keyword}"
+Дополнительные: ${secondary.map(k => k.keyword).join(', ')}
+Категория: ${primary.category}
+Дата: ${new Date().toLocaleDateString('ru-RU')}
+
+Сделай статью практичной, полезной и ориентированной на ${primary.intent === 'commercial' ? 'потенциальных клиентов' : 'информационный поиск'}.`
       }
     ],
     temperature: 0.8,
-    max_tokens: 3000,
+    max_tokens: 4000,
   });
 
   const response = completion.choices[0]?.message?.content || '';
@@ -86,7 +177,6 @@ async function generateArticle() {
   // Парсим JSON из ответа
   let article;
   try {
-    // Извлекаем JSON из ответа
     const jsonMatch = response.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       article = JSON.parse(jsonMatch[0]);
@@ -103,9 +193,12 @@ async function generateArticle() {
     slug: generateSlug(article.title),
     excerpt: article.excerpt,
     content: article.content,
-    keywords: article.keywords || topicData.keywords,
+    keywords: article.keywords || allKeywords.map(k => k.keyword),
     readTime: article.readTime || '10 мин',
-    coverImage: `https://images.unsplash.com/photo-1500000000000?w=800&q=80`,
+    coverImage: getCoverImage(primary.category),
+    category: primary.category,
+    primaryKeyword: primary.keyword,
+    frequency: primary.frequency,
   };
 }
 
@@ -162,7 +255,7 @@ export async function GET(request: NextRequest) {
         content: articleData.content,
         coverImage: articleData.coverImage,
         authorName: 'Редакция',
-        category: 'articles',
+        category: articleData.category === 'federal' ? 'cases' : 'articles',
         published: true,
       }
     });
@@ -170,6 +263,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       message: 'Статья успешно опубликована',
+      seo: {
+        primaryKeyword: articleData.primaryKeyword,
+        frequency: articleData.frequency,
+        keywords: articleData.keywords,
+      },
       post: {
         id: post.id,
         title: post.title,
