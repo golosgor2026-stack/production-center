@@ -1,0 +1,179 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Заявки с форм
+model Request {
+  id          String   @id @default(cuid())
+  name        String
+  position    String?  // Должность
+  organization String? // Организация
+  phone       String?
+  email       String
+  description String?  // Описание проекта
+  meetingType String?  // Формат встречи: online, offline, phone
+  source      String?  // Источник заявки (main, federal, b2b, etc.)
+  status      String   @default("new") // new, in_progress, completed, rejected
+  notes       String?  // Заметки админа
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Посты блога
+model BlogPost {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  content     String   // Markdown content
+  excerpt     String?  // Краткое описание
+  coverImage  String?  // URL изображения
+  category    String   @default("news") // news, articles, cases, press
+  featured    Boolean  @default(false)
+  published   Boolean  @default(false)
+  authorName  String?  // Имя автора
+  views       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Члены команды
+model TeamMember {
+  id          String   @id @default(cuid())
+  name        String
+  role        String   // Должность/роль
+  bio         String?  // Биография
+  photo       String?  // URL фото
+  email       String?
+  phone       String?
+  order       Int      @default(0) // Порядок отображения
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Направления услуг
+model ServiceDirection {
+  id          String   @id @default(cuid())
+  slug        String   @unique // federal, b2b, festivals, concerts, expert
+  title       String
+  subtitle    String?
+  description String   // Основной текст
+  heroImage   String?  // Главное изображение
+  videoUrl    String?  // Видео URL
+  competencies String? // JSON массив компетенций
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Фотогалерея для направлений
+model GalleryImage {
+  id          String   @id @default(cuid())
+  serviceSlug String?  // Связь с направлением
+  url         String   // URL изображения
+  caption     String?  // Подпись
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Контент страниц (для редактирования)
+model PageContent {
+  id        String   @id @default(cuid())
+  slug      String   @unique // Идентификатор секции
+  content   String   // JSON или HTML контент
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Настройки сайта
+model SiteSettings {
+  id          String   @id @default(cuid())
+  key         String   @unique // Ключ настройки
+  value       String   // Значение (JSON для сложных объектов)
+  category    String   @default("general") // general, style, seo, contacts
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Медиафайлы
+model MediaFile {
+  id          String   @id @default(cuid())
+  filename    String   // Имя файла
+  originalName String? // Оригинальное имя
+  mimeType    String   // Тип файла
+  size        Int      // Размер в байтах
+  url         String   // URL для доступа
+  alt         String?  // Alt текст
+  category    String   @default("general") // general, hero, team, blog, gallery
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Секции главной страницы
+model HeroSection {
+  id              String   @id @default(cuid())
+  title           String   // Заголовок
+  subtitle        String?  // Подзаголовок
+  backgroundImage String?  // URL фонового изображения
+  videoUrl        String?  // URL видео
+  buttonText      String?  // Текст кнопки
+  buttonLink      String?  // Ссылка кнопки
+  stats           String?  // JSON со статистикой
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Секции контента
+model ContentSection {
+  id          String   @id @default(cuid())
+  slug        String   @unique // Идентификатор секции
+  title       String   // Заголовок секции
+  subtitle    String?  // Подзаголовок
+  content     String   // Основной контент (HTML)
+  imageUrl    String?  // Изображение
+  videoUrl    String?  // Видео
+  buttonText  String?  // Текст кнопки
+  buttonLink  String?  // Ссылка кнопки
+  layout      String   @default("default") // default, split, fullwidth, video
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// FAQ
+model FAQItem {
+  id        String   @id @default(cuid())
+  question  String   // Вопрос
+  answer    String   // Ответ
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Достижения
+model Achievement {
+  id          String   @id @default(cuid())
+  title       String   // Название
+  year        String   // Год
+  type        String   @default("event") // event, award, letter
+  imageUrl    String?  // Изображение
+  description String?  // Описание
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

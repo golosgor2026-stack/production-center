@@ -1,0 +1,458 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.75rem;
+  
+  /* Бело-серая цветовая схема */
+  --background: #FFFFFF;
+  --foreground: #1A1A1A;
+  
+  /* Карточки */
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+  
+  /* Поповеры */
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+  
+  /* Основной акцент */
+  --primary: #1A1A1A;
+  --primary-foreground: #FFFFFF;
+  
+  /* Вторичный */
+  --secondary: #F5F5F5;
+  --secondary-foreground: #333333;
+  
+  /* Приглушенные */
+  --muted: #F5F5F5;
+  --muted-foreground: #666666;
+  
+  /* Акцент */
+  --accent: #E5E5E5;
+  --accent-foreground: #333333;
+  
+  /* Деструктивный */
+  --destructive: #DC2626;
+  
+  /* Границы и инпуты */
+  --border: #E5E5E5;
+  --input: #E5E5E5;
+  --ring: #333333;
+  
+  /* Чарты */
+  --chart-1: #333333;
+  --chart-2: #666666;
+  --chart-3: #999999;
+  --chart-4: #CCCCCC;
+  --chart-5: #EEEEEE;
+  
+  /* Сайдбар */
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1A1A1A;
+  --sidebar-primary: #1A1A1A;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F5F5F5;
+  --sidebar-accent-foreground: #333333;
+  --sidebar-border: #E5E5E5;
+  --sidebar-ring: #333333;
+}
+
+.dark {
+  --background: #0A0A0A;
+  --foreground: #FAFAFA;
+  --card: #1A1A1A;
+  --card-foreground: #FAFAFA;
+  --popover: #1A1A1A;
+  --popover-foreground: #FAFAFA;
+  --primary: #FFFFFF;
+  --primary-foreground: #0A0A0A;
+  --secondary: #1A1A1A;
+  --secondary-foreground: #FAFAFA;
+  --muted: #1A1A1A;
+  --muted-foreground: #888888;
+  --accent: #1A1A1A;
+  --accent-foreground: #FAFAFA;
+  --destructive: #EF4444;
+  --border: #333333;
+  --input: #333333;
+  --ring: #FFFFFF;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "liga" 1, "calt" 1;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-gray-900 font-bold tracking-tight;
+  }
+}
+
+/* Анимации */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(2deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { 
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes scroll-gallery {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); }
+}
+
+/* Ken Burns анимация для Hero */
+@keyframes kenburns {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+  25% {
+    transform: scale(1.05) translate(-1%, -1%);
+  }
+  50% {
+    transform: scale(1.1) translate(-2%, 0);
+  }
+  75% {
+    transform: scale(1.05) translate(-1%, 1%);
+  }
+  100% {
+    transform: scale(1) translate(0, 0);
+  }
+}
+
+@keyframes kenburns-alt {
+  0% {
+    transform: scale(1.1) translate(-2%, -2%);
+  }
+  25% {
+    transform: scale(1.05) translate(-1%, 0);
+  }
+  50% {
+    transform: scale(1) translate(0, 1%);
+  }
+  75% {
+    transform: scale(1.08) translate(-1.5%, -1%);
+  }
+  100% {
+    transform: scale(1.1) translate(-2%, -2%);
+  }
+}
+
+@keyframes hero-glow {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes float-particle {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(20px);
+    opacity: 0;
+  }
+}
+
+.animate-kenburns {
+  animation: kenburns 20s ease-in-out infinite;
+}
+
+.animate-kenburns-alt {
+  animation: kenburns-alt 25s ease-in-out infinite;
+}
+
+.animate-hero-glow {
+  animation: hero-glow 4s ease-in-out infinite;
+}
+
+.animate-float-particle {
+  animation: float-particle 15s linear infinite;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.6s ease-out forwards;
+}
+
+.animate-slide-left {
+  animation: slideInLeft 0.8s ease-out forwards;
+}
+
+.animate-slide-right {
+  animation: slideInRight 0.8s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.animate-gallery-scroll {
+  animation: scroll-gallery 25s linear infinite;
+}
+
+/* Задержки */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+.delay-700 { animation-delay: 0.7s; }
+.delay-800 { animation-delay: 0.8s; }
+
+/* Скроллбар */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CCCCCC;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #999999;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Градиенты */
+.gradient-white-gray {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 50%, #F0F0F0 100%);
+}
+
+.gradient-subtle {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F8F8F8 50%, #F0F0F0 100%);
+}
+
+/* Карточки */
+.card-hover {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+}
+
+/* Кнопки */
+.btn-primary {
+  background: #1A1A1A;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #333333;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* Стекло */
+.glass-white {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Паттерны */
+.pattern-dots {
+  background-image: radial-gradient(#E5E5E5 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.pattern-grid {
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Фото с эффектом иллюстрации */
+.photo-illustration {
+  filter: contrast(1.05) saturate(0.95);
+  position: relative;
+}
+
+.photo-illustration::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.05) 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.02) 100%
+  );
+  pointer-events: none;
+}
+
+/* 3D галерея */
+.gallery-3d-container {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+.gallery-3d-item {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+/* Cookie баннер */
+.cookie-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: white;
+  border-top: 1px solid #E5E5E5;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Линии */
+.line-accent {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #333333, transparent);
+}
