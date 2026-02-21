@@ -86,30 +86,30 @@ const stats = [
   { value: "50K", label: "участников" },
 ];
 
-// Последние новости
-const latestNews = [
+// Статичные новости как fallback
+const staticNews = [
   {
-    id: 1,
+    id: "1",
     title: "Петербургский международный экономический форум 2024: итоги",
     excerpt: "Подводим результаты участия команды в ПМЭФ-2024.",
     date: "8 июня 2024",
-    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&q=80",
+    coverImage: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&q=80",
     slug: "peterburgskiy-forum-2024",
   },
   {
-    id: 2,
+    id: "2",
     title: "Корпоративные мероприятия 2024: тренды и идеи",
     excerpt: "Главные тренды корпоративных событий.",
     date: "10 июня 2024",
-    image: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=400&q=80",
+    coverImage: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=400&q=80",
     slug: "korporativnye-meropriyatiya-2024",
   },
   {
-    id: 3,
+    id: "3",
     title: "Как выбрать event-агентство в Москве: 10 критериев",
     excerpt: "Чек-лист для выбора надёжного event-агентства.",
     date: "15 июня 2024",
-    image: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400&q=80",
+    coverImage: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400&q=80",
     slug: "event-agency-moscow",
   },
 ];
@@ -218,6 +218,40 @@ function Gallery3D() {
 
 export default function Home() {
   const [showForm, setShowForm] = useState(false);
+  const [latestNews, setLatestNews] = useState(staticNews);
+  const [isLoadingNews, setIsLoadingNews] = useState(true);
+
+  // Загрузка свежих статей из базы данных
+  useEffect(() => {
+    async function fetchNews() {
+      try {
+        const res = await fetch('/api/blog?limit=3&published=true');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.data && data.data.length > 0) {
+            const formattedNews = data.data.map((post: any) => ({
+              id: post.id,
+              title: post.title,
+              excerpt: post.excerpt || post.content?.substring(0, 150) + '...',
+              date: new Date(post.createdAt).toLocaleDateString('ru-RU', { 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+              }),
+              coverImage: post.coverImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&q=80',
+              slug: post.slug,
+            }));
+            setLatestNews(formattedNews);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch news:', error);
+      } finally {
+        setIsLoadingNews(false);
+      }
+    }
+    fetchNews();
+  }, []);
 
   return (
     <>
@@ -322,7 +356,7 @@ export default function Home() {
               >
                 <div className="relative h-48 overflow-hidden">
                   <Image
-                    src={news.image}
+                    src={news.coverImage}
                     alt={news.title}
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-700"
