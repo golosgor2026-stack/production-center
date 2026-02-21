@@ -268,8 +268,7 @@ export default function Home() {
                 Обсудить проект
               </Button>
               <Button
-                variant="outline"
-                className="px-10 py-7 text-lg rounded-2xl border-2 border-white text-white hover:bg-white hover:text-gray-900 font-medium shadow-lg transition-all duration-300"
+                className="px-10 py-7 text-lg rounded-2xl border-2 border-white bg-transparent text-white hover:bg-white hover:text-gray-900 font-medium shadow-lg transition-all duration-300"
                 asChild
               >
                 <Link href="#expertise">
