@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  types: {
+  typescript: {
     ignoreBuildErrors: true,
   },
   reactStrictMode: false,
@@ -17,7 +17,6 @@ const nextConfig: NextConfig = {
         hostname: '*.unsplash.com',
       },
     ],
-    // Отключаем оптимизацию для внешних изображений (ускоряет загрузку)
     unoptimized: true,
   },
 };
